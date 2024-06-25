@@ -1,0 +1,324 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: lightpink;
+  overflow: hidden;
+  /* position: fixed; */
+  /* left: 0; */
+  /* bottom: 0; */
+}
+@media only screen and (max-width: 600px) {
+  body {
+    overflow-y: scroll;
+  }
+}
+
+#songsContainer {
+  height: 80vh;
+  width: 70vw;
+  /* margin: 0 auto; */
+  display: grid;
+  position: relative;
+  top: 10.5vh;
+  padding: 1rem;
+  left: 23vw;
+  grid-template-columns: auto auto auto auto auto auto auto auto;
+  gap: 1rem;
+  row-gap: 2rem;
+  align-content: center;
+  justify-content: start;
+  align-items: center;
+  justify-items: center;
+  overflow-x: scroll;
+}
+
+@media only screen and (max-width: 600px) {
+  #songsContainer {
+    height: 100vh;
+    width: 70vw;
+    margin: 0 auto;
+    margin-top: 12vh;
+    display: grid;
+    position: relative;
+    top: 0;
+    left: 0vw;
+    grid-template-columns: auto auto auto auto auto auto auto auto;
+    gap: 1rem;
+    row-gap: 2rem;
+    align-content: center;
+    justify-content: start;
+    align-items: center;
+    justify-items: center;
+    overflow-x: scroll;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  #grid-item {
+    border: 2px solid white;
+    object-fit: cover;
+    background-color: #fbbcc791;
+    padding: 1rem 1rem 0 1rem;
+    display: flex;
+    width: 15rem;
+    height: fit-content;
+    max-height: 35rem;
+    cursor: pointer;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+#textIntro {
+  width: 12vw;
+  height: 73vh;
+  overflow-y: scroll;
+  position: fixed;
+  font-size: 23pt;
+  top: 12vh;
+  left: 5rem;
+  color: white;
+  z-index: 1;
+  border: 1px solid white;
+  padding: 1rem;
+  text-shadow: 1px 1px 10px #ffc9c9;
+}
+@media only screen and (max-width: 600px) {
+  #textIntro {
+    width: 69vw;
+    height: 80vh;
+    overflow-y: scroll;
+    position: relative;
+    font-size: 23pt;
+    top: 9.5vh;
+    left: 0;
+    margin: auto;
+    color: white;
+    z-index: 1;
+    border: 1px solid white;
+    padding: 1rem;
+    text-shadow: 1px 1px 10px #ffc9c9;
+    margin-bottom: 2rem;
+  }
+}
+
+#textIntro::-webkit-scrollbar {
+  width: 1vh;
+}
+
+#textIntro::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+#textIntro::-webkit-scrollbar-thumb {
+  background-color: white;
+  outline: 1px solid rgb(251, 163, 163);
+}
+
+#songsContainer::-webkit-scrollbar {
+  height: 1vh;
+}
+
+#songsContainer::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+#songsContainer::-webkit-scrollbar-thumb {
+  background-color: white;
+  outline: 1px solid rgb(251, 163, 163);
+}
+
+/* @media only screen and (max-width: 600px) {
+  p {
+    position: relative;
+    top: 10vh;
+    left: 12vw;
+    height: 50vh;
+    width: 50rem;
+    font-size: 25pt;
+    text-align: center;
+  }
+} */
+
+#grid-item {
+  border: 2px solid white;
+  object-fit: cover;
+  background-color: #fbbcc791;
+  padding: 1rem 1rem 0 1rem;
+  display: flex;
+  width: 15rem;
+  height: fit-content;
+  max-height: 35rem;
+  cursor: pointer;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+#grid-item > img {
+  object-fit: fill;
+  position: relative;
+  left: 0;
+  top: 0;
+  /* margin: 0 auto; */
+  width: 15rem;
+  height: 15rem;
+}
+
+/* a {
+  width: 18rem;
+  height: 18rem;
+} */
+
+.audio {
+  position: relative;
+  bottom: 0;
+  /* margin: auto; */
+  background-color: #f1f3f4;
+  left: 0;
+  width: 15rem;
+  height: 1rem;
+}
+
+#grid-item:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 182, 193, 0.748);
+}
+
+/* #grid-item:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 182, 193, 0.748);
+}
+
+#grid-item:active {
+  transform: scale(1);
+  background-color: rgb(249, 107, 129);
+} */
+
+.letras {
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  text-align: center;
+  width: 14.5rem;
+  max-height: 30rem;
+  overflow-y: auto;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: flex-start;
+  /* align-items: flex-start; */
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 150px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #020101b0;
+  margin: auto;
+  margin-top: -4rem;
+  z-index: 1;
+  padding: 20px;
+  color: white;
+  border: 1px solid #ffffff29;
+  box-shadow: 4px 2px 20px 0px white;
+  width: 30rem;
+  height: 43rem;
+  display: flex;
+  word-wrap: break-word;
+  white-space: normal !important;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.modal-content > p {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.close {
+  color: #aaaaaa;
+  margin: 0 auto;
+  /* float: left; */
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+h3 {
+  color: palegoldenrod;
+}
+
+.letras::-webkit-scrollbar {
+  width: 0.2vw;
+}
+
+.letras::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.letras::-webkit-scrollbar-thumb {
+  background-color: #f6adad;
+  outline: 1px solid rgb(251, 163, 163);
+}
+
+/* #bearbug {
+  position: relative;
+  left: 1vw;
+  bottom: 40vh;
+  height: 25%;
+  z-index: -1;
+} */
+
+#bearbug {
+  position: fixed;
+  /* margin: auto; */
+  left: 25vw;
+  top: 0;
+  bottom: 100vh;
+  height: 100%;
+  z-index: -1;
+}
+
+@media only screen and (max-width: 600px) {
+  #bearbug {
+    top: 10vh;
+    left: -30vw;
+    height: 75%;
+    position: fixed;
+  }
+}
