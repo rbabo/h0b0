@@ -1,0 +1,181 @@
+* {
+  padding: 0;
+  margin: 0;
+  border-box: 0;
+}
+
+#balloonAll {
+  position: absolute;
+  left: 50%;
+  bottom: 70%;
+  cursor: pointer;
+  /* animation: fly 6s ease-in-out infinite; */
+}
+
+.fly {
+  animation: fly 15s linear forwards;
+}
+@keyframes fly {
+  0% {
+    transform: translateY(0vh) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-25vh) rotate(8deg);
+  }
+  60% {
+    transform: translateY(-50vh) rotate(-8deg);
+  }
+  90% {
+    transform: translateY(-100vh) rotate(8deg);
+  }
+  100% {
+    transform: translateY(0vh) rotate(0deg);
+  }
+}
+
+.balloon {
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+  background-color: palevioletred;
+  position: absolute;
+  top: 100px;
+  left: 140px;
+  animation: float 4.5s infinite;
+}
+
+@keyframes float {
+  50% {
+    transform: translateY(50px);
+  }
+}
+
+.balloon::before {
+  content: "";
+  height: 200px;
+  width: 140px;
+  background-color: pink;
+  border-radius: 50%;
+  position: absolute;
+  left: 30px;
+}
+
+.balloon::after {
+  position: absolute;
+  content: "";
+  height: 200px;
+  width: 80px;
+  background-color: salmon;
+  border-radius: 50%;
+  left: 60px;
+  top: 0;
+}
+
+.bottom {
+  position: relative;
+  background-color: salmon;
+  height: 20px;
+  width: 90px;
+  top: 188px;
+  left: 53px;
+}
+
+.fireContainer {
+  position: absolute;
+  background-color: darkgray;
+  border-radius: 0px 0px px 5px 5px;
+  height: 20px;
+  width: 30px;
+  top: 207px;
+  left: 83px;
+}
+
+@keyframes fire {
+  0% {
+    opacity: 0;
+    height: 0px;
+  }
+  50% {
+    opacity: 1;
+    height: inherit;
+  }
+  100% {
+    opacity: 0;
+    height: 0px;
+  }
+}
+
+.fireContainer::before {
+  position: absolute;
+  content: "";
+  top: 20px;
+  left: 5px;
+  border-radius: 0px 0px 1000px 1000px;
+  height: 20px;
+  width: 20px;
+  background-color: yellow;
+  animation: fire 4s infinite;
+}
+
+.fireContainer::after {
+  position: absolute;
+  content: "";
+  top: 19px;
+  left: 10px;
+  border-radius: 0px 0px 1000px 1000px;
+  height: 15px;
+  width: 10px;
+  background-color: red;
+  animation: fire 4s infinite;
+}
+
+.basket {
+  height: 50px;
+  width: 70px;
+  background-color: burlywood;
+  position: relative;
+  top: 240px;
+  left: 62.5px;
+  border-radius: 0 0 10px 10px;
+}
+
+.basket::before {
+  position: absolute;
+  content: "";
+  background-color: brown;
+  height: 7px;
+  width: 80px;
+  border-radius: 7px;
+  left: -5px;
+}
+
+.rope {
+  background-color: brown;
+  height: 55px;
+  width: 3px;
+  position: relative;
+  top: 137px;
+  left: 96.5px;
+}
+
+.rope::before {
+  position: absolute;
+  content: "";
+  background-color: brown;
+  height: 55px;
+  width: 3px;
+  top: 0;
+  left: -38px;
+  transform: rotate(-8deg);
+}
+
+.rope::after {
+  position: absolute;
+  content: "";
+  background-color: brown;
+  height: 55px;
+  width: 3px;
+  top: 0;
+  left: 38px;
+  transform: rotate(8deg);
+}

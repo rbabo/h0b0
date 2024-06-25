@@ -1,0 +1,398 @@
+* {
+  box-sizing: border-box;
+  user-select: none;
+  font-family: "pixel";
+}
+
+/* Firefox */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ffc8ff #000000;
+}
+
+@font-face {
+  font-family: pixel;
+  src: url("../fonts/joystix_monospace.otf");
+  font-size: 13pt;
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Chrome, Edge and Safari */
+*::-webkit-scrollbar {
+  width: 3px;
+  width: 3px;
+}
+*::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: #000000;
+}
+
+*::-webkit-scrollbar-track:hover {
+  background-color: #eab0ba;
+}
+
+*::-webkit-scrollbar-track:active {
+  background-color: #ffd8e6;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #ffc8ff;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #ff9af8;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background-color: #ffc8ff;
+}
+
+grid {
+  display: grid;
+  width: 0;
+  margin: auto;
+  height: fit-content;
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+  /* gap: 0.2rem; */
+  grid-template-columns: auto;
+  position: relative;
+  top: 2vh;
+  padding-left: 1vw;
+  padding-right: 2vw;
+  padding-bottom: 1vh;
+  margin-top: 8vh;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+}
+
+.fade-out {
+  opacity: 0; /* Faded out opacity */
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow-x: hidden;
+  background-color: black;
+  /* top: 2vh; */
+}
+
+h1 {
+  color: white;
+  letter-spacing: 15pt;
+}
+
+#background {
+  height: 100vh;
+  width: 100%;
+  object-fit: cover;
+  z-index: -10;
+  position: fixed;
+  left: 0;
+  top: 0vh;
+}
+
+@media only screen and (max-width: 600px) {
+  #background {
+    object-fit: none;
+  }
+}
+
+.musicas {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: flex-start;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  font-size: 10pt;
+}
+
+summary {
+  /* font-style: italic; */
+  transition: all 0.05s ease-in-out;
+  font-size: 11pt;
+}
+
+details {
+  /* border: 1px solid grey; */
+  /* padding: 0.3rem; */
+  /* padding-bottom: 0.5rem; */
+  color: white;
+  font-size: 14pt;
+  background-color: #4a464684;
+  margin-left: 1.5rem;
+  transition: background-color 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+summary:hover {
+  /* background-color: rgba(255, 192, 203, 0.75); */
+  /* animation: hue 1s ease-in-out infinite; */
+
+  color: pink;
+  /* transform: scale(1.1); */
+  transform-origin: left;
+}
+
+@keyframes color-change {
+  10% {
+    color: red;
+  }
+  50% {
+    color: pink;
+  }
+  100% {
+    color: yellow;
+  }
+}
+
+.checks {
+  display: flex;
+  flex-direction: row;
+}
+/* #track-media {
+  display: flex;
+  gap: 4vmin;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(0%, -50%);
+}
+
+#track-media > img {
+  width: 40vmin;
+  height: 56vmin;
+  object-fit: cover;
+  object-position: center;
+} */
+
+#nav-back {
+  position: sticky;
+  left: 45%;
+  width: 10%;
+  top: 0;
+  margin-top: 3vh;
+  margin-bottom: -10vh;
+  z-index: 1;
+  filter: invert();
+}
+
+input[type="checkbox"] {
+  position: relative;
+  appearance: none;
+  top: 1.25rem;
+  /* box-shadow: inset 10px 10px pink; */
+  /* margin-top: 1rem; */
+  display: inline;
+  /* border-radius: 100%; */
+  margin: 0 0 0 1rem;
+  padding: 0;
+  left: -1rem;
+  cursor: pointer;
+  /* margin-right: 1rem; */
+  /* height: 15px;
+  width: 15px; */
+  appearance: none;
+  border: 1px dashed pink;
+  height: 1rem;
+  width: 1rem;
+  vertical-align: bottom;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input[type="checkbox"]:hover {
+  transform: scale(1.1);
+  border: 1px dotted pink;
+}
+
+input[type="checkbox"]:checked:after {
+  content: "";
+  /* border-radius: 100%; */
+  background-color: lightcoral;
+  height: 0.65rem;
+  width: 0.65rem;
+}
+
+/* .checkbox:hover > input {
+  background-color: lightpink;
+}
+
+.checkbox > input:checked {
+  box-shadow: inset 0px 20px 0px 0px pink;
+} */
+
+/* Hide the browser's default checkbox */
+/* input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+} */
+
+/* Create a custom checkbox */
+/* .checkmark {
+  position: relative;
+  top: 1.7rem;
+  margin-top: 1rem;
+  left: 0;
+  height: 25px;
+  border-radius: 100%;
+  width: 25px;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+/* input:hover ~ .checkmark {
+  background-color: #ccc;
+} */
+
+/* When the checkbox is checked, add a blue background */
+/* input:checked ~ .checkmark {
+  background-color: #2196f3;
+}  */
+
+/* Style the checkmark/indicator */
+/* .checkmark:after {
+  left: 4px;
+  top: 0;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+} */
+
+.buttons {
+  display: flex;
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#saveButton {
+  position: fixed;
+  /* left: 10vw; */
+  left: 0;
+  top: 97vh;
+  width: 48px;
+  height: 24px;
+  z-index: 3;
+}
+
+#saveButton:active {
+  transform: scale(0.9);
+  background-color: #e91e63;
+}
+
+button {
+  /* position: fixed; */
+  top: 2rem;
+  right: 48rem;
+  color: white;
+  background-color: #eab0ba5a;
+  border: none;
+  font-variant: all-petite-caps;
+  border-radius: 5%;
+}
+
+button:hover {
+  background-color: #6f6d6d;
+}
+
+button:active {
+  transform: scale(0.9);
+  background-color: #e91e63;
+}
+
+#shuffleButton.active {
+  background-color: #e91e63;
+}
+
+#play-in-sequence-button {
+  position: fixed;
+  top: 5rem;
+  right: 45rem;
+  color: white;
+  background-color: #eab0ba5a;
+  border: none;
+  border-radius: 5%;
+  z-index: 100000;
+}
+
+#play-in-sequence-button:hover {
+  background-color: #6f6d6d;
+}
+
+#play-in-sequence-button:active {
+  transform: scale(0.9);
+  background-color: #722733a4;
+}
+
+@media only screen and (max-width: 600px) {
+  #nav-back {
+    width: 40%;
+    margin: 0 auto;
+    position: sticky;
+    left: 33%;
+    margin-bottom: -10vh;
+    top: 20px;
+  }
+}
+
+@keyframes scale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+details[open] summary {
+  font-size: 15pt;
+  /* background: #dd6177; */
+  background-color: #4a464684;
+  color: palevioletred;
+  padding: 2px 0px 2px 10px;
+  /* animation: hue 5s ease-in-out infinite;
+  /* animation: hue 5s ease-in-out infinite; */
+}
+
+details[open]:hover summary {
+  background-color: #4a464684 !important;
+}
+
+summary:hover {
+  background-color: rgb(111, 109, 109);
+  font-size: 13pt;
+}
+
+@keyframes hue {
+  0% {
+    color: rgba(252, 133, 153, 0.5);
+    /* filter: hue-rotate(0); */
+  }
+  50% {
+    color: rgba(252, 180, 224, 0.494);
+  }
+  100% {
+    color: rgba(252, 133, 153, 0.5);
+    /* filter: hue-rotate(360deg); */
+  }
+}

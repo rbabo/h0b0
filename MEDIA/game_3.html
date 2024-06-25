@@ -1,0 +1,1244 @@
+<head>
+    <style>
+        body {
+            margin: 0;
+            /* background-color: black; */
+            background: url(../MEDIA/jogo.gif);
+            background-size: cover;
+        }
+
+        canvas {
+            background: #0000009e;
+            cursor: none;
+            border: 1px solid white;
+            /* background: url(../MEDIA/background_stars.gif); */
+            display: fixed;
+            background-size: cover;
+            /* margin: 2rem; */
+            position: fixed;
+            left: 30vw;
+            /* width: 100vw; */
+            /* height: 100vh; */
+            bottom: 0;
+            ;
+        }
+
+        #start-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+        }
+
+        #game-container {
+            position: relative;
+        }
+
+        #score-container {
+            position: absolute;
+            right: 5vw;
+            top: 30vh;
+            text-align: center;
+            display: flex;
+            padding: 10px;
+            color: yellow;
+            /* background-color: white; */
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-content: center;
+            align-items: center;
+        }
+
+        #jump-text {
+            font-size: 12px;
+            position: absolute;
+            left: 0;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <audio id="background-music" src="../MEDIA/jumpingupdown_18jan2023.mp3" loop autoplay></audio>
+    <div id="start-menu">
+        <h1>Block Jumper</h1>
+        <p>Press the button to start the game</p>
+        <button id="start-button">Start</button>
+    </div>
+    <div id="game-container">
+        <!-- <canvas id="game-canvas" width="400" height="800"></canvas> -->
+        <canvas id="game-canvas"></canvas>
+        <div id="score-container">
+            <p id="score-text">Score: 0</p>
+            <p id="highscore-text">Highscore: 0</p>
+            <p id="airtime-text">Airtime: 0</p>
+            <!-- <p id="jump-text">Jumps:<br> 0</p> -->
+            <p id="lives-text">Lives: 0</p>
+            <p id="multiplier-text">Multiplier: 0</p>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 640;
+        canvas.height = window.innerHeight;
+
+        // use CSS to make the canvas responsive
+        // canvas.style.width = "100%";
+        // canvas.style.height = "100%";
+
+        // listen for window resize events
+        window.addEventListener("resize", function () {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+
+        const backgroundMusic = document.getElementById('background-music');
+        backgroundMusic.play();
+
+        let isMusicPlaying = true;
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'p') {
+                if (isMusicPlaying) {
+                    backgroundMusic.pause();
+                    isMusicPlaying = false;
+                } else {
+                    backgroundMusic.play();
+                    isMusicPlaying = true;
+                }
+            }
+        });
+
+        // Create an array to store the different collision sound files
+        const jumpSounds = ['../MEDIA/notas_items/hat.mp3'];
+
+        const itemSounds = ['../MEDIA/notas_items/item.mp3'];
+
+        const collisionSounds = ['../MEDIA/notas_items/collision.mp3'];
+        // const collisionSounds = ['../MEDIA/notas_items/nota1.mp3', '../MEDIA/notas_items/nota2.mp3', '../MEDIA/notas_items/nota3.mp3', '../MEDIA/notas_items/nota4.mp3', '../MEDIA/notas_items/nota5.mp3', '../MEDIA/notas_items/nota6.mp3', '../MEDIA/notas_items/nota7.mp3'];
+
+        // Create a variable to keep track of the current sound being played
+        let currentSound = 0;
+
+        // Set up the player's starting position and size
+        let originalPlayerColor = "blue";
+        let player = {
+            x: canvas.width / 2,
+            y: canvas.height - 50,
+            width: 20,
+            height: 20,
+            color: originalPlayerColor,
+            border: "white"
+        };
+        let playerX = canvas.width / 2;
+        let playerY = canvas.height - 50;
+        let playerWidth = 20;
+        const playerHeight = 20;
+
+
+        // Set up the player's movement variables
+        let playerVelocityX = 0;
+        let playerVelocityY = 0;
+        let playerAccelerationY = 0.4; // Gravity
+        let playerMaxVelocityY = 15; // Max falling speed
+        let playerJumpVelocity = -10; // Jump strength
+        let playerDoubleJumpVelocity = -8; // Double jump strength
+        let playerJumps = 0; // Number of jumps remaining
+        let playerMaxJumps = 15; // Number of jumps allowed before touching the ground
+        const itemJumpBonus = -1;
+        let playerTeleportWidth = playerWidth * 2;
+
+        let difficulty = 1;
+        let highscore = 0;
+        let gameOver = false;
+        // Set up the player's score and lives
+        let playerScore = 0;
+        let playerLives = 3;
+
+        // Set up the obstacles
+        let obstacleWidth = 25;
+        let obstacleHeight = 25;
+        let obstacleVelocity = 5; // Speed at which obstacles fall
+        let obstacleFrequency = 60000; // Time between obstacle spawns, in milliseconds
+        let obstacles = []; // Array to store obstacle objects
+
+        // HORIZONTAL OBSTACLES
+        let horizontalObstacles = [];
+
+
+        let lastHorizontalObstacleSpawnTime = 0;
+        const horizontalObstacleSpawnDelay = 2000; // time in milliseconds
+        const horizontalObstacleScoreThreshold = 50;
+
+        // Set up the horizontal obstacles
+        const horizontalObstacleWidth = 15;
+        const horizontalObstacleHeight = 15;
+        let horizontalObstacleVelocity = 2; // Speed at which obstacles move horizontally
+        let horizontalObstacleFrequency = 60000; // Time between obstacle spawns, in milliseconds
+
+
+        const homingObstacles = [];
+        let lastHomingObstacleSpawnTime = 0;
+        const homingObstacleSpawnDelay = 5000; // time in milliseconds
+        const homingObstacleScoreThreshold = 50;
+        const homingObstacleLifetime = 5000;  // 5 seconds
+        const homingObstaclesSpeed = 0.010; // obstacle speed
+        const homingObstacleFrequency = 60000;
+        const homingObstacleSize = 10; // obstacle size
+
+
+        let movingObstacles = [];
+        let movingObstacleLifetime = 5000;
+
+        // Set up the pick-up items
+        const itemValue = 1;
+        const itemWidth = 25;
+        const itemHeight = 25;
+        let itemVelocity = 5; // Speed at which items fall
+        let itemFrequency = 60000; // Time between item spawns, in milliseconds
+        let itemJumpVelocity = -10;
+        // Set up variables for the point display
+        const pointDisplayVelocity = 500;
+        let pointDisplayDuration = 500;
+        const pointDisplayFont = '12px sans-serif';
+        const pointDisplayColor = 'yellow';
+        let pointDisplays = [];
+        const extraLifeWidth = 15;
+        const extraLifeHeight = 15;
+        let extraLifeVelocity = 12; // Speed at which items fall
+        let extraLifeFrequency = 60; // Time between item spawns, in milliseconds
+        let extraLifeValue = 1;
+
+        let extraLives = [];
+
+
+        let items = []; // Array to store item objects
+        let itemCount = 0;
+        let itemSum = 0;
+
+        let multiplierItems = [];
+        let multiplierItemWidth = 8;
+        let multiplierItemHeight = 8;
+        let multiplierItemVelocity = 5;
+        let multiplierItemFrequency = 50000;
+
+        let airTime = 0;
+
+        // Set up keyboard control variables
+        let leftPressed = false;
+        let rightPressed = false;
+        let upPressed = false;
+        let spacePressed = false;
+        let downPressed = false;
+
+
+        // Handle key down events
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft' || event.key === "a") {
+                leftPressed = true;
+
+            } else if (event.key === 'ArrowRight' || event.key === "d") {
+                rightPressed = true;
+
+            } else if (event.key === "ArrowDown") {
+                downPressed = true;
+            } else if (event.key === 'ArrowUp') {
+                upPressed = true;
+
+            } else if (event.key === ' ') {
+                spacePressed = true;
+                const sound = new Audio(jumpSounds[currentSound]);
+                sound.play();
+
+                // Increment the currentSound variable
+                currentSound++;
+
+                // If currentSound is greater than the number of collision sounds, set it back to 0
+                if (currentSound >= jumpSounds.length) {
+                    currentSound = 0;
+                }
+            }
+        });
+
+        // let jumpText = document.getElementById("jump-text");
+
+
+
+
+
+
+
+
+
+        let shiftPressed = false;
+
+        let isTeleporting = false;
+        let teleportTimer;
+        // Handle key down events
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Shift') {
+                teleportTimer = setTimeout(() => {
+                    isTeleporting = false;
+                    shiftPressed = false;
+                }, 1000); // 2 seconds
+                shiftPressed = true;
+                isTeleporting = true;
+            } else if (shiftPressed && event.key === 'ArrowLeft') {
+                isTeleporting = true;
+
+                playerX -= 20;
+
+                player.color = "black";
+            } else if (shiftPressed && event.key === 'ArrowRight') {
+                isTeleporting = true;
+
+                playerX += 20;
+
+                player.color = "black";
+            } else if (shiftPressed && event.key === 'ArrowUp') {
+                isTeleporting = true;
+
+                playerY -= 10;
+
+                player.color = "black";
+            } else if (shiftPressed && event.key === 'ArrowDown') {
+                isTeleporting = true;
+
+                playerY += 10;
+
+                player.color = "black";
+            }
+        });
+
+        // Handle key up events
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'Shift') {
+                // clearTimeout(teleportTimer);
+                playerWidth = playerWidth;
+                player.color = originalPlayerColor;
+            }
+        });
+
+
+
+
+
+
+
+        // Handle key up events
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'ArrowLeft' || event.key === "a") {
+                leftPressed = false;
+            } else if (event.key === 'ArrowRight' || event.key === "d") {
+                rightPressed = false;
+            } else if (event.key === "ArrowDown") {
+                downPressed = false;
+            } else if (event.key === 'ArrowUp') {
+                upPressed = false;
+            } else if (event.key === ' ') {
+                spacePressed = false;
+            }
+        });
+
+        let lastTime = 0;
+
+        let slowMotion = false;
+        let slowMotionTime = 0;
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'g') {
+                playerAccelerationY = 0.2;
+                setInterval(() => {
+                    playerAccelerationY = 0.4;
+                }, 5000);
+
+            }
+        });
+
+
+
+
+
+
+        const startMenu = document.getElementById('start-menu');
+        startMenu.style.display = 'block';
+        canvas.style.display = 'none';
+
+        const startButton = document.getElementById('start-button');
+        startButton.addEventListener('click', startGame);
+
+        function startGame() {
+
+            // hide the start menu
+            document.getElementById('start-menu').style.display = 'none';
+            canvas.style.display = "block";
+            let gamePaused = false;
+            let animationId;
+            document.addEventListener('keydown', (event) => {
+                if (event.key === "p") {
+                    if (!gamePaused) {
+                        gamePaused = true;
+                        cancelAnimationFrame(animationId);
+                    } else {
+                        gamePaused = false;
+                        lastTime = performance.now();
+                        animationId = requestAnimationFrame(gameLoop);
+                    }
+                }
+            });
+
+
+
+            requestAnimationFrame(gameLoop);
+
+
+            function gameLoop(time) {
+
+                document.body.style.cursor = "none";
+                document.addEventListener("mousemove", function () {
+                    document.body.style.cursor = "default";
+                });
+
+                if (gamePaused) {
+                    ctx.font = '48px sans-serif';
+                    ctx.fillStyle = 'white';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Paused', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+                canvas.style.cursor = "none";
+                // Calculate the elapsed time since the last frame
+                let elapsedTime = time - lastTime;
+                lastTime = time;
+
+
+
+                // Update the player's position and velocity
+                playerVelocityY += playerAccelerationY;
+                playerVelocityY = Math.min(playerVelocityY, playerMaxVelocityY);
+                playerY += playerVelocityY;
+
+                if (playerY < canvas.height) {
+                    airTime += elapsedTime;
+                } else {
+                    airTime = 0;
+                }
+
+                if (leftPressed) {
+                    playerVelocityX = -5;
+                } else if (rightPressed) {
+                    playerVelocityX = 5;
+                } else if (downPressed) {
+                    playerVelocityY = 5;
+                } else {
+                    playerVelocityX = 0;
+                }
+                playerX += playerVelocityX;
+
+                // Handle player jumping
+                // Handle player jumping
+                if (upPressed && playerJumps < playerMaxJumps) {
+                    playerVelocityY = playerJumpVelocity;
+                    playerJumps++;
+                } else if (spacePressed && playerJumps < playerMaxJumps) {
+                    playerVelocityY = playerDoubleJumpVelocity;
+                    playerJumps++;
+                    spacePressed = false;  // Reset spacePressed after double jump
+                }
+                // Keep the player within the bounds of the canvas
+                if (playerX - playerWidth / 2 < 0) {
+                    playerX = playerWidth / 2;
+                } else if (playerX + playerWidth / 2 > canvas.width) {
+                    playerX = canvas.width - playerWidth / 2;
+                }
+
+                if (playerY + playerHeight / 2 > canvas.height) {
+                    playerY = canvas.height - playerHeight / 2;
+                    playerJumps = 0; // Reset jumps when player touches the ground
+                }
+
+                if (playerY < 0) {
+                    playerY = 0;
+                }
+                if (playerScore > 300) {
+                    if (Math.random() < elapsedTime / 2000) {
+                        movingObstacles.push({
+                            x: canvas.width / 2,
+                            y: 0,
+                            width: 13,
+                            height: 13,
+                            direction: "right",
+                            createdAt: Date.now(),
+                        });
+                    }
+                }
+
+
+
+
+
+
+                for (let i = 0; i < movingObstacles.length; i++) {
+                    if (Date.now() - movingObstacles[i].createdAt > movingObstacleLifetime) {
+                        movingObstacles.splice(i, 1);
+                    }
+                }
+                // Add a new moving obstacle every 2 seconds
+                // setInterval((createMovingObstcle,) => {
+                //     movingObstacles.push({ x: canvas.width / 2, y: 0, width: 50, height: 50, direction: 'right' });
+                // }, 5000);
+
+
+                // Function that updates the position of the moving obstacles
+                function updateMovingObstacles() {
+
+                    for (const obstacle of movingObstacles) {
+                        // Change direction if the obstacle hits the edge of the canvas
+                        if (obstacle.x > canvas.width - obstacle.width || obstacle.x < 0) {
+                            obstacle.direction = obstacle.direction === 'right' ? 'left' : 'right';
+                        }
+
+                        // Move the obstacle
+                        obstacle.x += obstacle.direction === 'right' ? 2 : -2;
+                        obstacle.y += 2;
+                    }
+                    // Draw the obstacle
+                    for (const obstacle of movingObstacles) {
+                        ctx.fillStyle = 'red';
+                        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+
+                        // Check for collision with the player
+                        if (collides(obstacle, playerX, playerY, playerWidth, playerHeight)) {
+                            playerLives--;
+                            movingObstacles = movingObstacles.filter((o) => o !== obstacle);
+                            canvas.style.border = "2px solid red";
+                            setTimeout(() => {
+                                canvas.style.border = "1px solid white";
+                            }, 20);
+                            player.color = "red";
+                            setTimeout(() => {
+                                player.color = originalPlayerColor;
+                            }, 40);
+                            if (playerLives === 0) {
+                                // Game over!
+                                canvas.style.cursor = "crosshair";
+                                canvas.addEventListener('click', restartGame);
+                                let gameOver = true;
+                                ctx.font = '48px sans-serif';
+                                ctx.fillStyle = 'red';
+                                ctx.textAlign = 'center';
+                                ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+                                return;
+                            }
+                        }
+                    }
+                }
+
+
+                // Update the positions of the obstacles and remove any that have fallen off the screen
+                for (let i = 0; i < obstacles.length; i++) {
+                    obstacles[i].y += obstacleVelocity;
+                    if (obstacles[i].y > canvas.height) {
+                        obstacles.splice(i, 1);
+                        i--;
+                    }
+                }
+
+                // Update the positions of the pick-up items and remove any that have fallen off the screen
+                for (let i = 0; i < items.length; i++) {
+                    items[i].y += itemVelocity;
+                    if (items[i].y > canvas.height) {
+                        items.splice(i, 1);
+                        i--;
+                    }
+                }
+
+                // Update the positions of the pick-up items and remove any that have fallen off the screen
+                for (let i = 0; i < multiplierItems.length; i++) {
+                    multiplierItems[i].y += multiplierItemVelocity
+                    if (multiplierItems[i].y > canvas.height) {
+                        multiplierItems.splice(i, 1);
+                        i--;
+                    }
+                }
+
+                // Update the positions of the pick-up items and remove any that have fallen off the screen
+                for (let i = 0; i < extraLives.length; i++) {
+                    extraLives[i].y += extraLifeVelocity;
+                    if (extraLives[i].y > canvas.height) {
+                        extraLives.splice(i, 1);
+                        i--;
+                    }
+                }
+
+                // Update the positions of the obstacles and remove any that have fallen off the screen
+                for (let i = 0; i < horizontalObstacles.length; i++) {
+                    horizontalObstacles[i].x += horizontalObstacleVelocity;
+                    if (horizontalObstacles[i].x > canvas.width) {
+                        horizontalObstacles.splice(i, 1);
+                        i--;
+                    }
+                }
+
+
+                if (playerScore >= 200) {
+                    if (lastHomingObstacleSpawnTime + homingObstacleSpawnDelay < time) {
+                        lastHomingObstacleSpawnTime = time;
+                        homingObstacles.push({
+                            x: 0,
+                            y: 0,
+                            width: 10,
+                            height: 10,
+                            startTime: Date.now(),
+                            createdAt: Date.now(),
+                        });
+                    }
+                }
+
+                for (let i = 0; i < homingObstacles.length; i++) {
+                    if (Date.now() - homingObstacles[i].createdAt > homingObstacleLifetime) {
+                        homingObstacles.splice(i, 1);
+                    }
+                }
+
+                for (let i = 0; i < homingObstacles.length; i++) {
+                    // move the obstacle towards the player
+                    homingObstacles[i].x += playerX * homingObstaclesSpeed;
+                    homingObstacles[i].y += playerY * homingObstaclesSpeed;
+                    // Check if the obstacle has been following the player for more than 5 seconds
+                    if (elapsedTime > 2500) {
+                        homingObstacles[i].splice(i, 1);
+                        i--;
+                    }
+                }
+
+                for (let i = homingObstacles.length - 1; i >= 0; i--) {
+                    if (!isTeleporting && collides(homingObstacles[i], playerX, playerY, playerWidth, playerHeight)) {
+                        playerLives--;
+                        itemCount = 0;
+                        if (playerJumps > 15) {
+                            playerJumps = 15;
+                        } else {
+                            playerJumps += 15;
+                        }
+
+
+
+                        const collisionSound = new Audio(collisionSounds[currentSound]);
+                        collisionSound.play();
+
+                        // Increment the currentSound variable
+                        currentSound++;
+
+                        // If currentSound is greater than the number of collision sounds, set it back to 0
+                        if (currentSound >= collisionSounds.length) {
+                            currentSound = 0;
+                        }
+                        homingObstacles.splice(i, 1);
+                        canvas.style.border = "2px solid red";
+
+
+                        setTimeout(() => {
+                            canvas.style.border = "1px solid white";
+
+                        }, 20);
+                        player.color = "red"; // change player color to red
+
+
+                        setTimeout(() => {
+                            player.color = originalPlayerColor;
+                        }, 40); // change back to original color after 500ms
+                    }
+
+                    if (playerLives === 0) {
+                        // Game over!
+                        canvas.style.cursor = "crosshair";
+                        canvas.addEventListener('click', restartGame);
+                        let gameOver = true;
+                        let isTeleporting = false;
+                        ctx.font = '48px sans-serif';
+                        ctx.fillStyle = 'red';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+                        return;
+                    }
+
+                }
+
+                // Update the player's score when they pick up an item
+                // playerScore += itemValue;
+                for (let i = horizontalObstacles.length - 1; i >= 0; i--) {
+                    horizontalObstacles[i].x += horizontalObstacles[i].velocityX;
+                    horizontalObstacles[i].y += horizontalObstacles[i].velocityY;
+                    if (!isTeleporting && collides(horizontalObstacles[i], playerX, playerY, playerWidth, playerHeight)) {
+                        playerLives--;
+                        itemCount = 0;
+                        if (playerJumps > 15) {
+                            playerJumps = 15;
+                        } else {
+                            playerJumps += 15;
+                        }
+
+
+
+                        const collisionSound = new Audio(collisionSounds[currentSound]);
+                        collisionSound.play();
+
+                        // Increment the currentSound variable
+                        currentSound++;
+
+                        // If currentSound is greater than the number of collision sounds, set it back to 0
+                        if (currentSound >= collisionSounds.length) {
+                            currentSound = 0;
+                        }
+                        horizontalObstacles.splice(i, 1);
+                        canvas.style.border = "2px solid red";
+
+
+                        setTimeout(() => {
+                            canvas.style.border = "1px solid white";
+
+                        }, 20);
+                        player.color = "red"; // change player color to red
+
+
+                        setTimeout(() => {
+                            player.color = originalPlayerColor;
+                        }, 40); // change back to original color after 500ms
+                    }
+
+                    if (playerLives === 0) {
+                        // Game over!
+                        canvas.style.cursor = "crosshair";
+                        canvas.addEventListener('click', restartGame);
+                        let gameOver = true;
+                        let isTeleporting = false;
+                        ctx.font = '48px sans-serif';
+                        ctx.fillStyle = 'red';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+                        return;
+                    }
+
+                }
+
+
+
+
+
+                // Check for collisions between the player and obstacles
+                for (const obstacle of obstacles) {
+                    if (!isTeleporting && collides(obstacle, playerX, playerY, playerWidth, playerHeight)) {
+                        playerLives--;
+                        itemCount = 0;
+
+                        if (playerJumps > 15) {
+                            playerJumps = 15;
+                        } else {
+                            playerJumps += 15;
+                        }
+
+                        const collisionSound = new Audio(collisionSounds[currentSound]);
+                        collisionSound.play();
+
+                        // Increment the currentSound variable
+                        currentSound++;
+
+                        // If currentSound is greater than the number of collision sounds, set it back to 0
+                        if (currentSound >= collisionSounds.length) {
+                            currentSound = 0;
+                        }
+
+
+
+                        if (playerLives === 0) {
+                            // Game over!
+                            canvas.style.cursor = "crosshair";
+                            canvas.addEventListener('click', restartGame);
+                            let gameOver = true;
+                            let isTeleporting = false;
+                            ctx.font = '48px sans-serif';
+                            ctx.fillStyle = 'red';
+                            ctx.textAlign = 'center';
+                            ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+                            return;
+                        } else {
+                            // Remove the obstacle and continue playing
+                            obstacles = obstacles.filter((o) => o !== obstacle);
+                            canvas.style.border = "2px solid red";
+
+                            setTimeout(() => {
+                                canvas.style.border = "1px solid white";
+
+                            }, 20);
+                            player.color = "red"; // change player color to red
+
+
+                            setTimeout(() => {
+                                player.color = originalPlayerColor;
+                            }, 40); // change back to original color after 500ms
+                        }
+                    }
+                }
+
+
+                // Check for collisions between the player and pick-up items
+                // Calculate the player's score multiplier based on their height in the screen
+                const scoreMultiplier = (canvas.height / playerY / 1);
+
+                for (let i = 0; i < items.length; i++) {
+                    if (collides(items[i], playerX, playerY, playerWidth, playerHeight)) {
+                        // Play the corresponding sound from the collisionSounds array
+                        itemCount++;
+                        // itemSum += itemValue;
+
+
+                        // Increase the player's score and remove the item
+                        const airMultiplier = airTime / 10000;
+                        playerScore += Math.round((itemValue * airMultiplier) + (itemValue * scoreMultiplier));
+
+                        items.splice(i, 1);
+                        i--;
+                        const itemSound = new Audio(itemSounds[currentSound]);
+                        itemSound.play();
+
+                        // Increment the currentSound variable
+                        currentSound++;
+
+                        // If currentSound is greater than the number of collision sounds, set it back to 0
+                        if (currentSound >= itemSounds.length) {
+                            currentSound = 0;
+                        }
+                        // Chain multiple items together
+                        for (let j = i + 1; j < items.length; j++) {
+                            const otherItem = items[j];
+                            if (Math.abs(items.x - otherItem.x) < items.size && Math.abs(items.y - otherItem.y) < items.size) {
+                                otherItem.chain = item.chain + 1;
+                            }
+                        }
+
+
+                        playerJumps += Math.round(itemJumpBonus * scoreMultiplier);
+                        obstacleVelocity = obstacleVelocity + 0.1;
+                        obstacleFrequency = obstacleFrequency + 6;
+
+                        itemFrequency = itemFrequency + 2;
+                        // obstacleHeight = obstacleHeight + 0.01;
+                        obstacleWidth = obstacleWidth + 0.01;
+                        itemVelocity = itemVelocity + 0.02;
+                        player.color = "white"; // change player color to red
+                        setTimeout(() => {
+                            player.color = originalPlayerColor;
+                        }, 30); // change back to original color after 500ms
+
+                        // Create a new object to hold the point display properties
+                        let pointDisplay = {
+                            x: playerX,
+                            y: playerY,
+                            value: Math.round((itemValue * airMultiplier) + (itemValue * scoreMultiplier)),
+                            time: 0
+                            // finished: false
+                        };
+
+                        // Add the point display to the array
+                        pointDisplays.push(pointDisplay);
+                        console.log(itemFrequency, itemValue, airMultiplier, scoreMultiplier, (itemValue * airMultiplier) + (itemValue * scoreMultiplier))
+                        // Break out of the loop
+                        // break;
+
+                        // Break out of the loop
+
+                        // canvas.height = canvas.height - 10;
+
+                    }
+                }
+
+                for (let i = 0; i < multiplierItems.length; i++) {
+                    if (collides(multiplierItems[i], playerX, playerY, playerWidth, playerHeight)) {
+                        console.log(itemSum, itemValue)
+                        playerScore = playerScore + itemCount;
+                        playerJumps -= itemCount;
+                        playerJumps -= 1;
+                        // playerVelocityY -= 10;
+                        playerVelocityY = playerJumpVelocity;
+                        itemFrequency = itemFrequency + 0.3;
+                        console.log(playerScore += itemCount * itemSum)
+
+                        multiplierItems.splice(i, 1);
+                        i--;
+                        let pointDisplay = {
+                            x: playerX,
+                            y: playerY,
+                            value: itemCount,
+                            time: 0
+                            // finished: false
+                        };
+
+                        // Add the point display to the array
+                        pointDisplays.push(pointDisplay);
+                        ctx.fillStyle = "white"
+                        ctx.fillText("X", player.x, player.y);;
+
+                        itemCount = 0;
+                        itemSum = 0;
+                    }
+
+                }
+
+
+
+                if (playerJumps > playerMaxJumps) {
+                    playerMaxJumps = playerJumps
+                } else {
+                    playerMaxJumps = 15;
+                }
+
+                for (let i = 0; i < extraLives.length; i++) {
+                    if (collides(extraLives[i], playerX, playerY, playerWidth, playerHeight)) {
+                        // Increase the player's score and remove the item
+                        playerLives = playerLives + 1;
+                        playerScore = playerScore + 5;
+                        extraLives.splice(i, 1);
+                        i--;
+                        let pointDisplay = {
+                            x: playerX,
+                            y: playerY,
+                            value: 1,
+                            time: 0
+                            // finished: false
+                        };
+
+                        // Add the point display to the array
+                        pointDisplays.push(pointDisplay);
+                        ctx.fillStyle = "white"
+                        ctx.fillText("+1 Life", player.x, player.y);;
+                    }
+                }
+
+                // if (playerMaxJumps - playerJumps <= 3) {
+                //     playerAccelerationY = 0.5;
+                // } else {
+                //     playerAccelerationY = 0.5;
+                // }
+
+                // Spawn HORIZONTAL obstacles and pick-up items at random intervals
+                if (playerScore >= 100) {
+                    if (lastHorizontalObstacleSpawnTime + horizontalObstacleSpawnDelay < time) {
+                        lastHorizontalObstacleSpawnTime = time;
+
+                        // Add a new horizontal obstacle to the array
+                        horizontalObstacles.push({
+                            x: 0,
+                            y: Math.random() * canvas.height,
+                            width: horizontalObstacleWidth,
+                            height: horizontalObstacleHeight,
+                            velocityX: horizontalObstacleVelocity,
+                            velocityY: horizontalObstacleVelocity,
+                        });
+                    }
+                }
+
+
+
+
+
+                // Spawn new obstacles and pick-up items at random intervals
+                if (Math.random() < elapsedTime / 500) {
+                    obstacles.push({
+                        x: Math.random() * canvas.width,
+                        y: 0,
+                        width: obstacleWidth,
+                        height: obstacleHeight,
+                    });
+                }
+                if (Math.random() < elapsedTime / 600) {
+                    items.push({
+                        x: Math.random() * canvas.width,
+                        y: 0,
+                        width: itemWidth,
+                        height: itemHeight,
+                    });
+                }
+
+                if (Math.random() < elapsedTime / 1500) {
+                    multiplierItems.push({
+                        x: Math.random() * canvas.width,
+                        y: 0,
+                        width: multiplierItemWidth,
+                        height: multiplierItemHeight,
+                        velocityY: multiplierItemVelocity,
+                        velocityX: multiplierItemVelocity,
+                    });
+                }
+
+                if (Math.random() < elapsedTime / 15000) {
+                    extraLives.push({
+                        x: Math.random() * canvas.width,
+                        y: 0,
+                        width: extraLifeWidth,
+                        height: extraLifeHeight,
+                    });
+                }
+
+                // Update the highscore if the player's score is higher
+                if (playerScore > highscore) {
+                    highscore = playerScore;
+                    localStorage.setItem('highscore', highscore);
+                }
+
+
+                // Load the highscore from local storage
+                const savedHighscore = localStorage.getItem('highscore');
+                if (savedHighscore) {
+                    highscore = savedHighscore;
+                }
+
+                // Clear the canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Draw the player
+                if (!isTeleporting) {
+                    // Draw the player's border
+                    ctx.strokeStyle = player.border;
+                    ctx.strokeRect(playerX - playerWidth / 2, playerY - playerHeight / 2, playerWidth, playerHeight);
+                    ctx.fillStyle = originalPlayerColor;
+                    ctx.fillRect(playerX - playerWidth / 2, playerY - playerHeight / 2, playerWidth, playerHeight);
+
+                }
+
+                if (isTeleporting) {
+                    ctx.strokeStyle = player.border;
+                    ctx.strokeRect(playerX - playerWidth / 2, playerY - playerHeight / 2, playerWidth, playerHeight);
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(playerX - playerWidth / 2, playerY - playerHeight / 2, playerWidth, playerHeight);
+                }
+                // Draw the player
+
+
+                // if (isTeleporting) {
+                //     ctx.fillStyle = 'black';
+                //     ctx.fillRect(playerX - playerWidth / 2, playerY - playerHeight / 2, playerWidth, playerHeight);
+                //     canvas.style.border = "1px solid white";
+                // }
+                ctx.fillStyle = 'red';
+                for (const obstacle of horizontalObstacles) {
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                }
+
+                // Draw the obstacles
+                ctx.fillStyle = 'red';
+                for (const obstacle of obstacles) {
+                    ctx.fillRect(obstacle.x - obstacle.width / 2, obstacle.y - obstacle.height / 2, obstacle.width, obstacle.height);
+                }
+
+                // Draw the obstacles
+                ctx.fillStyle = 'pink';
+                for (const obstacle of homingObstacles) {
+                    ctx.fillRect(obstacle.x - obstacle.width / 2, obstacle.y - obstacle.height / 2, obstacle.width, obstacle.height);
+                }
+
+
+
+                // Draw the pick-up items
+                ctx.fillStyle = 'green';
+                for (const item of items) {
+                    ctx.fillRect(item.x - item.width / 2, item.y - item.height / 2, item.width, item.height);
+                }
+
+                ctx.fillStyle = 'yellow';
+                for (const extraLife of extraLives) {
+                    ctx.fillRect(extraLife.x - extraLife.width / 2, extraLife.y - extraLife.height / 2, extraLife.width, extraLife.height);
+                }
+
+                ctx.fillStyle = 'white';
+                for (const multiplierItem of multiplierItems) {
+                    ctx.fillRect(multiplierItem.x - multiplierItem.width / 2, multiplierItem.y - multiplierItem.height / 2, multiplierItem.width, multiplierItem.height);
+                }
+
+                // Draw homing obstacle on the canvas
+
+                // Draw the score and lives
+                ctx.font = '14px sans-serif';
+                ctx.fillStyle = 'yellow';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Score: ${playerScore}`, canvas.width / 2, 35);
+                ctx.textAlign = 'left';
+                ctx.fillText(`Lives: ${playerLives}`, 60, 35);
+                ctx.textAlign = "center";
+                if (playerMaxJumps - playerJumps >= 15) {
+                    playerMaxJumps - playerJumps == 15;
+                }
+                ctx.fillStyle = 'yellow';
+                ctx.font = '14px sans-serif';
+                ctx.fillText(`${playerMaxJumps - playerJumps}`, canvas.width / 2, 55);
+
+                ctx.font = '14px sans-serif';
+                ctx.fillStyle = 'yellow';
+                ctx.textAlign = 'left';
+                let firstTwoDigits = (Math.round(airTime)).toString().slice(0, 2);
+                ctx.fillText(`Time: ${firstTwoDigits}`, 60, 75);
+
+
+
+
+                // // Draw the point displays on the canvas
+                // ctx.font = "12px sans-serif";
+                // ctx.fillStyle = "yellow";
+                // ctx.textAlign = 'center';
+                // for (const display of pointDisplays) {
+                //     ctx.globalAlpha = display.alpha;
+                //     ctx.fillText(`+${display.value}`, display.x, display.y);
+                // }
+                // ctx.globalAlpha = 1; // Reset globalAlpha after drawing point displays
+
+                // Draw the highscore text
+                ctx.font = '14px sans-serif';
+                ctx.fillStyle = 'yellow';
+                ctx.textAlign = 'center';
+                // ctx.fillText(`Highscore: ${highscore}`, canvas.width / 2, 55);
+
+                // Draw the ITEMCOUNT text
+                ctx.font = '14px sans-serif';
+                ctx.fillStyle = 'yellow';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Multiplier: ${itemCount}`, 60, 55);
+
+                const scoreText = document.getElementById('score-text');
+                const highscoreText = document.getElementById('highscore-text');
+                // const jumpsText = document.getElementById("jump-text");
+                const livesText = document.getElementById("lives-text");
+                const multiplierText = document.getElementById("multiplier-text")
+                const airtimeText = document.getElementById("airtime-text")
+
+                // jumpsText.textContent = `${playerMaxJumps - playerJumps}`;
+                livesText.textContent = `Lives: ${playerLives}`;
+                multiplierText.textContent = `Multiplier: ${itemCount}`;
+                airtimeText.textContent = `Airtime: ${firstTwoDigits} `;
+
+                // Update the score text
+                scoreText.textContent = `Score: ${playerScore} `;
+
+                // Update the highscore text
+                highscoreText.textContent = `Highscore: ${highscore}`;
+
+
+                // let finishedPointDisplays = [];
+
+                function renderPointDisplays() {
+
+                    // Iterate through the pointDisplays array
+                    for (let i = pointDisplays.length - 1; i >= 0; i--) {
+                        pointDisplays[i].time += elapsedTime;
+                        if (pointDisplays[i].time >= 350) {
+                            pointDisplays.splice(i, 1);
+                        } else {
+                            // Draw the point display on the canvas
+                            ctx.font = pointDisplayFont;
+                            ctx.fillStyle = pointDisplayColor;
+                            ctx.fillText(pointDisplays[i].value, pointDisplays[i].x, pointDisplays[i].y);
+                        }
+                    }
+                }
+
+
+
+                // Check if two objects are colliding
+                function collides(a, bX, bY, bWidth, bHeight) {
+                    return (
+                        a.x - a.width / 2 < bX + bWidth / 2 &&
+                        a.x + a.width / 2 > bX - bWidth / 2 &&
+                        a.y - a.height / 2 < bY + bHeight / 2 &&
+                        a.y + a.height / 2 > bY - bHeight / 2
+                    );
+                }
+
+                // if (player) {
+                //     obstacleVelocity = obstacleVelocity++;
+                //     obstacleFrequency = obstacleFrequency++;
+                // }
+
+                // document.addEventListener("keydown", function (event) {
+                //     if (event.code === "Space") {
+                //         // jumpText.style.left = playerX + "px";
+                //         // jumpText.style.top = playerY + "px";
+                //         jumpText.style.opacity = 1;
+                //         setTimeout(() => {
+                //             jumpText.style.opacity = 0;
+                //         }, 200);
+                //     }
+                // }
+                // );
+                updateMovingObstacles();
+                function restartGame() {
+                    if (gameOver = true) {
+                        // Clear the canvas
+                        canvas.removeEventListener('click', restartGame);
+                        // Code to reset the game variables and restart the game loop
+                        playerLives = 3;
+                        playerScore = 0;
+                        playerJumps = 0;
+                        obstacles = [];
+                        obstacleVelocity = 5; // Speed at which obstacles fall
+                        obstacleFrequency = 60000; // Time between obstacle spawns, in milliseconds
+                        obstacleHeight = 25;
+                        obstacleWidth = 25;
+                        itemVelocity = 5;
+                        airtime = 0;
+
+                        elapsedTime = 0;
+                        lastTime = 0;
+
+                        items = [];
+                        requestAnimationFrame(gameLoop);
+                    }
+                }
+                renderPointDisplays();
+
+                // Request the next animation frame
+                requestAnimationFrame(gameLoop);
+
+
+            }
+        }
+
+
+
+
+
+
+
+        // // Start the game loop
+
+        // requestAnimationFrame(gameLoop);
+
+
+
+
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

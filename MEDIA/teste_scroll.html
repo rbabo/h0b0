@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="teste_scroll.css">
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .spacer {
+            height: 100vh;
+        }
+
+        #imagesequence {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+        }
+
+        #myimg {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+        }
+
+        .move {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        fieldset {
+            border: none;
+        }
+
+        legend {
+            font-weight: bold;
+        }
+
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        label {
+            margin-right: 20px;
+        }
+
+        .viewsource {
+            display: block;
+            margin-top: 20px;
+            color: #333;
+            text-decoration: none;
+        }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>h0b0_hope you're well <3 </title>
+            <link rel="apple-touch-icon" sizes="180x180" href="../MEDIA/favicon_io/apple-touch-icon.png">
+            <link rel="icon" type="image/png" sizes="32x32" href="../MEDIA/favicon_io/favicon-32x32.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="../MEDIA/favicon_io/favicon-16x16.png">
+            <script src="https://kit.fontawesome.com/dd50269114.js" crossorigin="anonymous"></script>
+            <!-- <script src="https://kit.fontawesome.com/dd50269114.js" crossorigin="anonymous"></script> -->
+
+            <!-- <script>
+                let suanica = 'espectacular';
+                if (suanica === 'espectacular') alert('A SUANICA É A MAIS LINDA E ESPECTACULAR DO MUNDO! E ÀS VEZES CHEIRA A CHULÉZICO BOM!');
+            </script> -->
+</head>
+
+
+<body>
+    <form class="move">
+        <fieldset>
+            <legend>Toggle duration</legend>
+            <div>
+                <input type="radio" name="duration" id="bound" value="300" checked="">
+                <label for="bound">bound to scrollbar (duration = 300)</label>
+            </div>
+            <div>
+                <input type="radio" name="duration" id="unbound" value="0">
+                <label for="unbound">unbound from scrollbar (duration = 0)</label>
+            </div>
+        </fieldset>
+    </form>
+    <div class="spacer s2"></div>
+    <div class="spacer s0" id="trigger"></div>
+    <div id="imagesequence">
+        <img id="myimg" src="../MEDIA/fio_neon/0001.png"><br>
+        <a href="#" class="viewsource">view source</a>
+    </div>
+    <div class="spacer s2"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="js/scrollmagic/uncompressed/ScrollMagic.js"></script>
+    <script src="path/to/js/gsap/TweenMax.min.js"></script>
+    <script src="path/to/js/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Observer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Draggable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/MotionPathPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/EaselPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/PixiPlugin.min.js"></script>
+
+
+    <!-- RoughEase, ExpoScaleEase and SlowMo are all included in the EasePack file -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/EasePack.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/CustomEase.min.js"></script>
+    <!-- should be replaced with minified version when development is finished -->
+    <script src="path/to/js/jquery.scrollmagic.js"></script>
+    <!-- should be removed when development is finished -->
+    <script src="path/to/js/jquery.scrollmagic.debug.js"></script>
+    <script>
+        // this is where our code will go
+    </script>
+</body>
+<script>
+
+    import { gsap } from "gsap";
+
+    import { CustomEase } from "gsap/CustomEase";
+    import { RoughEase, ExpoScaleEase, SlowMo } from "gsap/EasePack";
+
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    import { Observer } from "gsap/Observer";
+    import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+    import { Draggable } from "gsap/Draggable";
+    import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+    import { EaselPlugin } from "gsap/EaselPlugin";
+    import { PixiPlugin } from "gsap/PixiPlugin";
+
+
+    gsap.registerPlugin(ScrollTrigger, Observer, ScrollToPlugin, Draggable, MotionPathPlugin, EaselPlugin, PixiPlugin, RoughEase, ExpoScaleEase, SlowMo, CustomEase);
+
+
+    var images = [
+        "../MEDIA/fio_neon/0001.png",
+        "../MEDIA/fio_neon/0002.png",
+        "../MEDIA/fio_neon/0003.png",
+        "../MEDIA/fio_neon/0004.png",
+        "../MEDIA/fio_neon/0005.png",
+        "../MEDIA/fio_neon/0006.png",
+        "../MEDIA/fio_neon/0006.png",
+        "../MEDIA/fio_neon/0007.png",
+        "../MEDIA/fio_neon/0008.png",
+        "../MEDIA/fio_neon/0009.png",
+        "../MEDIA/fio_neon/0010.png",
+        "../MEDIA/fio_neon/0011.png",
+        "../MEDIA/fio_neon/0012.png",
+        "../MEDIA/fio_neon/0013.png",
+        "../MEDIA/fio_neon/0014.png",
+        "../MEDIA/fio_neon/0015.png",
+        "../MEDIA/fio_neon/0016.png",
+        "../MEDIA/fio_neon/0017.png",
+        "../MEDIA/fio_neon/0018.png",
+        "../MEDIA/fio_neon/0019.png",
+        "../MEDIA/fio_neon/0020.png",
+        "../MEDIA/fio_neon/0021.png",
+        "../MEDIA/fio_neon/0022.png",
+        "../MEDIA/fio_neon/0023.png",
+        "../MEDIA/fio_neon/0024.png",
+        "../MEDIA/fio_neon/0025.png",
+        "../MEDIA/fio_neon/0026.png",
+        "../MEDIA/fio_neon/0027.png",
+        "../MEDIA/fio_neon/0028.png",
+        "../MEDIA/fio_neon/0029.png",
+        "../MEDIA/fio_neon/0030.png",
+        "../MEDIA/fio_neon/0031.png",
+        "../MEDIA/fio_neon/0032.png",
+        "../MEDIA/fio_neon/0033.png",
+        "../MEDIA/fio_neon/0034.png",
+        "../MEDIA/fio_neon/0035.png",
+        "../MEDIA/fio_neon/0036.png",
+        "../MEDIA/fio_neon/0037.png",
+        "../MEDIA/fio_neon/0038.png",
+        "../MEDIA/fio_neon/0039.png",
+        "../MEDIA/fio_neon/0040.png",
+        "../MEDIA/fio_neon/0041.png",
+        "../MEDIA/fio_neon/0042.png",
+        "../MEDIA/fio_neon/0043.png",
+        "../MEDIA/fio_neon/0044.png",
+        "../MEDIA/fio_neon/0045.png",
+        "../MEDIA/fio_neon/0046.png",
+        "../MEDIA/fio_neon/0047.png",
+        "../MEDIA/fio_neon/0048.png",
+        "../MEDIA/fio_neon/0049.png",
+        "../MEDIA/fio_neon/0050.png",
+        "../MEDIA/fio_neon/0051.png",
+        "../MEDIA/fio_neon/0052.png",
+        "../MEDIA/fio_neon/0053.png",
+        "../MEDIA/fio_neon/0054.png",
+        "../MEDIA/fio_neon/0055.png",
+        "../MEDIA/fio_neon/0056.png",
+        "../MEDIA/fio_neon/0057.png",
+        "../MEDIA/fio_neon/0058.png",
+        "../MEDIA/fio_neon/0059.png",
+        "../MEDIA/fio_neon/0060.png",
+        "../MEDIA/fio_neon/0061.png",
+        "../MEDIA/fio_neon/0062.png",
+        "../MEDIA/fio_neon/0063.png",
+        "../MEDIA/fio_neon/0064.png",
+        "../MEDIA/fio_neon/0065.png",
+        "../MEDIA/fio_neon/0066.png",
+        "../MEDIA/fio_neon/0067.png",
+        "../MEDIA/fio_neon/0068.png",
+        "../MEDIA/fio_neon/0069.png",
+        "../MEDIA/fio_neon/0070.png",
+    ];
+
+    // TweenMax can tween any property of any object. We use this object to cycle through the array
+    var obj = { curImg: 0 };
+
+    // create tween
+    var tween = TweenMax.to(obj, 0.5, {
+        curImg: images.length - 1, // animate propery curImg to number of images
+        roundProps: "curImg", // only integers so it can be used as an array index
+        repeat: 3, // repeat 3 times
+        immediateRender: true, // load first image automatically
+        ease: Linear.easeNone, // show every image the same ammount of time
+        onUpdate: function () {
+            $("#myimg").attr("src", images[obj.curImg]); // set the image source
+        },
+    });
+
+    // init controller
+    var controller = new ScrollMagic.Controller();
+
+    // build scene
+    var scene = new ScrollMagic.Scene({ triggerElement: "#trigger", duration: 300 })
+        .setTween(tween)
+        .addIndicators() // add indicators (requires plugin)
+        .addTo(controller);
+
+    // handle form change
+    $("form.move input[name=duration]:radio").change(function () {
+        scene.duration($(this).val());
+    });
+
+</script>
+
+</html>

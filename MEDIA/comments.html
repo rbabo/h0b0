@@ -1,0 +1,38 @@
+<form id="comment-form" action="comments.php" method="post">
+    <label for="comment-text">Leave a comment:</label><br>
+    <textarea id="comment-text" name="comment" rows="4" cols="50"></textarea><br>
+    <button type="submit">Submit</button>
+</form>
+
+<!-- The container for displaying comments -->
+<div id="comment-section">
+    <!-- The comments will be displayed here using PHP -->
+</div>
+
+<style>
+    /* Style the comment form and container */
+    #comment-form {
+        margin: 20px 0;
+    }
+
+    #comment-section {
+        margin: 20px 0;
+    }
+
+    /* Style the individual comment elements */
+    .comment {
+        margin: 20px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+
+    .comment p {
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .comment .timestamp {
+        color: #999;
+        font-size: 14px;
+    }
+</style>

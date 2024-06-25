@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="H0B0_TEST_PLAY.CSS">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>h0b0_TEST <3 </title>
+            <link rel="apple-touch-icon" sizes="180x180" href="../MEDIA/favicon_io/apple-touch-icon.png">
+            <link rel="icon" type="image/png" sizes="32x32" href="../MEDIA/favicon_io/favicon-32x32.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="../MEDIA/favicon_io/favicon-16x16.png">
+            <script src="https://kit.fontawesome.com/dd50269114.js" crossorigin="anonymous"></script>
+            <!-- <script src="https://kit.fontawesome.com/dd50269114.js" crossorigin="anonymous"></script> -->
+
+            <!-- <script>
+                let suanica = 'espectacular';
+                if (suanica === 'espectacular') alert('A SUANICA É A MAIS LINDA E ESPECTACULAR DO MUNDO! E ÀS VEZES CHEIRA A CHULÉZICO BOM!');
+            </script> -->
+</head>
+
+<body>
+    <div id="content-container">
+    </div>
+    <script>
+        const contentContainer = document.getElementById("content-container");
+        const images = [
+            "../MEDIA/2019/h0b0_2.jpg",
+            "../MEDIA/2019/IMG_2208.JPG",
+            "../MEDIA/2019/IMG_2241.JPG",
+            // Add more image URLs here...
+        ];
+
+        const videos = [
+            "../MEDIA/2019/IMG_2546_3.mp4",
+            "../MEDIA/2019/img_2237_1.mp4",
+            // Add more video URLs here...
+        ];
+
+        let currentIndex = 0;
+
+        function displayContent() {
+            const currentContent = currentIndex % 6 < 1 ? images[currentIndex % images.length] : videos[currentIndex % videos.length];
+            const contentType = currentIndex % 6 < 1 ? 'image' : 'video';
+
+            contentContainer.innerHTML = '';
+
+            if (contentType === 'image') {
+                const img = document.createElement('img');
+                img.src = currentContent;
+                contentContainer.appendChild(img);
+                setTimeout(displayContent, 1000); // Show the next content after 1 second (1000ms)
+            } else if (contentType === 'video') {
+                const video = document.createElement('video');
+                video.src = currentContent;
+                video.autoplay = true;
+                video.controls = true; // Display video controls
+                contentContainer.appendChild(video);
+                setTimeout(displayContent, 5000); // Show the next content after 5 seconds (5000ms)
+            }
+
+            currentIndex++;
+        }
+
+        // Start the display loop
+        displayContent();
+    </script>
+</body>
+
+
+</html>
