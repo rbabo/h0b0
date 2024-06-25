@@ -61,6 +61,13 @@ body {
   /* transition: border 1s ease-in-out, background-color 0.1s linear; */
 }
 
+.link_cont {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+}
+
 .link_images > img {
   /* display: contents; */
   background-color: transparent;
@@ -309,7 +316,7 @@ header {
 .menuScroll:hover {
   width: 30vw;
   z-index: 1000001;
-  background-color: rgba(255, 255, 255, 0.177);
+  /* background-color: rgba(255, 255, 255, 0.177); */
 }
 
 .menuScroll::-webkit-scrollbar {
@@ -725,11 +732,23 @@ p {
   /* left: 30vw; */
   /* top: 30vh; */
   /* transform: scale(1.5); */
-  height: 100vh !important;
+  height: 100% !important;
   width: 100vw !important;
   object-fit: contain !important;
-  z-index: 1000000;
+  z-index: 100000000000 !important;
 }
+
+/* .gridItem.zoom {
+
+  width: 100vw !important;
+  position: fixed;
+  left: 0;
+  height: 100% !important; 
+  object-fit: contain !important; 
+  z-index: 1000000;
+  width: 100vw !important;
+  height: 100vh !important;
+} */
 
 /* .zoom > .gridItem {
   width: 334px !important;
@@ -848,7 +867,7 @@ p {
 
 section {
   display: grid;
-  width: 100vw;
+  width: 50vw;
   /* grid-template-columns: repeat(4, 334px); */
   grid-template-columns: repeat(3, 334px);
   margin: auto;
@@ -949,7 +968,7 @@ section {
   width: 334px;
   height: 480px;
   object-fit: cover;
-  z-index: 100000;
+  /* z-index: 100000; */
   /* transition: width 1s ease-in-out, height 1s ease-in-out; */
   transition: transform 0.1s ease-in-out;
   /* object-position: center;
@@ -957,23 +976,30 @@ section {
 }
 
 .gridItem:hover {
-  transform: scale(98%);
+  /* transform: scale(98%); */
   z-index: 1000;
 }
-
+/* ola */
 .gridItem.zoom video {
-  max-width: 100% !important; /* Ensure the video does not exceed the width of its container */
-  height: auto !important; /* Maintain aspect ratio */
-  object-fit: contain !important; /* Ensure the video fits within its container without stretching */
+  width: 100vw !important;
+  position: fixed;
+  left: 0;
+  height: 100% !important;
+  object-fit: contain !important;
 }
-
-.gridItem.zoom,
-.gridItem.zoom:hover {
-  /* Override hover effect when .zoom class is present */
-  transform: none;
+/* .gridItem.zoom {
+  width: 100vw !important;
+  position: fixed;
+  left: 0;
+  height: 100% !important;
+  object-fit: contain !important;
   z-index: 1000000;
   width: 100vw !important;
   height: 100vh !important;
+} */
+
+.gridItem.zoom:hover {
+  transform: none;
 }
 
 @media only screen and (max-width: 600px) {
@@ -1871,6 +1897,16 @@ section {
   /* width: 10; */
   left: -27vw;
   cursor: pointer;
+  z-index: 1000;
+}
+
+#fantasma {
+  position: relative;
+  height: 10%;
+  top: 10vh;
+  /* width: 10; */
+  left: 27vw;
+  /* cursor: pointer; */
   z-index: 1000;
 }
 

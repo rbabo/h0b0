@@ -52,15 +52,17 @@ observerVideo.observe(video);
 
 var isZoomActive = false;
 var $zoomedItem = null;
-// var $gridItems = $("video, img:not(.gifs)");
 var $gridItems = $(
-  ".gridItem:not(.gifs):not(.link_images):not(.link_videos):not(.musicas):not(.link_cont):not(.text)"
+  ".gridItem:not(.gifs):not(.link_images):not(.link_videos):not(.musicas):not(.link_cont):not(.text):not(.link)"
 );
-var gridOrder = []; // Array to store the order of grid items
+var gridOrder = [];
 
 // Function to update gridOrder array
 function updateGridOrder() {
   gridOrder = [];
+  $gridItems = $(
+    ".gridItem:not(.gifs):not(.link_images):not(.link_videos):not(.musicas):not(.link_cont):not(.text):not(.link).gridItem"
+  ); // Refresh the $gridItems selection
   $gridItems.each(function (index) {
     $(this).attr("data-grid-index", index); // Set data attribute to store original index
     gridOrder.push($(this));
@@ -68,18 +70,24 @@ function updateGridOrder() {
 }
 
 // Function to handle click event on grid items
-$gridItems.click(function () {
+function handleGridItemClick() {
   $gridItems.not(this).removeClass("zoom");
   $(this).toggleClass("zoom");
-  isZoomActive = $(this).hasClass("zoom");
-  if (isZoomActive) {
-    $zoomedItem = $(this);
-    $(document).on("keydown", handleKeyPress);
+  if ($(this).hasClass("sectionAltGridItems")) {
+    $(this).toggleClass("sectionAltGridItems").addClass("zoom");
   } else {
-    $zoomedItem = null;
-    $(document).off("keydown", handleKeyPress);
+    isZoomActive = $(this).hasClass("zoom");
+
+    if (isZoomActive) {
+      $zoomedItem = $(this);
+      $(document).on("keydown", handleKeyPress);
+      scrollToZoomedItem();
+    } else {
+      $zoomedItem = null;
+      $(document).off("keydown", handleKeyPress);
+    }
   }
-});
+}
 
 // Function to handle arrow key navigation
 function handleKeyPress(event) {
@@ -106,13 +114,36 @@ function navigateGrid(direction) {
     newIndex = 0;
   }
 
-  gridOrder[newIndex].click();
+  setZoomState(gridOrder[newIndex]);
+  scrollToZoomedItem();
+}
+
+// Function to set the zoom state without triggering additional clicks
+function setZoomState($item) {
+  $gridItems.removeClass("zoom");
+  $item.addClass("zoom");
+  scrollToZoomedItem();
+  $zoomedItem = $item;
+}
+
+// Function to scroll to the zoomed item
+function scrollToZoomedItem() {
+  if ($zoomedItem) {
+    $zoomedItem[0].scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 }
 
 // Update grid order when the window is resized
 $(window).on("resize", function () {
   updateGridOrder();
 });
+
+// Attach click event handler to grid items
+$(document).on(
+  "click",
+  ".gridItem:not(.gifs):not(.link_images):not(.link_videos):not(.musicas):not(.link_cont):not(.text):not(.link)",
+  handleGridItemClick
+);
 
 // Initial update of grid order
 updateGridOrder();
@@ -300,8 +331,8 @@ $(function () {
   $(".musicas").click(function () {
     $(".musicas").not(this).removeClass("fixed");
     $(this).toggleClass("fixed");
-    $(this).style.width = "196px";
-    $(this).style.height = "80vh";
+    // $(this).style.width = "196px";
+    // $(this).style.height = "80vh";
   });
 });
 
@@ -315,7 +346,7 @@ $("audio").on({
   },
 });
 
-// GIF ILHA SCROLLABLE
+// GIF ISLAND SCROLLABLE
 document.addEventListener("DOMContentLoaded", function () {
   const images = []; // Array to hold image URLs
   const totalFrames = 150; // Total number of frames
@@ -347,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateFrame() {
     const containerHeight = imageContainer.getBoundingClientRect().height;
     const scrollPosition = container.scrollTop - imageContainer.offsetTop;
-    const scrollPercent = scrollPosition / containerHeight;
+    const scrollPercent = (scrollPosition / containerHeight) * 0.2;
 
     // Calculate the delay based on the scroll percentage
     const delay = 200 + scrollPercent * 500; // Adjust the constants as needed
@@ -371,22 +402,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }, delay);
 
     // Adjust the position of the welcome text based on scroll percentage
-    const textTop = 20 - scrollPercent * 150; // Adjust the constants as needed
+    const textTop = 30 - scrollPercent * 550; // Adjust the constants as needed
     welcomeText.style.top = Math.max(textTop, 0) + "%";
-
-    //   // Hide or reveal the navbar based on scroll direction
-    //   if (container.scrollTop > lastScrollTop) {
-    //     // Scrolling down
-    //     navbar.style.opacity = "0";
-    //   } else  {
-    //     // Scrolling up
-    //     if (container.scrollTop < lastScrollTop) {
-    //       navbar.classList.add("menuScroll");
-    //       navbar.style.opacity = "1";
-    //     }
-    //   }
-    //   lastScrollTop = container.scrollTop;
-    // }
 
     // Hide or reveal the navbar based on scroll direction
     if (container.scrollTop > lastScrollTop) {
